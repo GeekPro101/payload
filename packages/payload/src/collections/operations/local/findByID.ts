@@ -1,12 +1,23 @@
-import type { CollectionSlug, JoinQuery, Payload, TypedLocale } from '../../../index.js'
+import type {
+  CollectionSlug,
+  JoinQuery,
+  Payload,
+  SelectType,
+  TransformDataWithSelect,
+  TypedLocale,
+} from '../../../index.js'
 import type { Document, PayloadRequest, RequestContext } from '../../../types/index.js'
-import type { DataFromCollectionSlug } from '../../config/types.js'
+import type { DataFromCollectionSlug, SelectFromCollectionSlug } from '../../config/types.js'
 
 import { APIError } from '../../../errors/index.js'
 import { createLocalReq } from '../../../utilities/createLocalReq.js'
 import { findByIDOperation } from '../findByID.js'
 
-export type Options<TSlug extends CollectionSlug = CollectionSlug> = {
+export type Options<
+  TSlug extends CollectionSlug,
+  TDisableErrors extends boolean,
+  TSelect extends SelectType,
+> = {
   collection: TSlug
   /**
    * context, which will then be passed to req.context, which can be read by hooks
@@ -14,7 +25,7 @@ export type Options<TSlug extends CollectionSlug = CollectionSlug> = {
   context?: RequestContext
   currentDepth?: number
   depth?: number
-  disableErrors?: boolean
+  disableErrors?: TDisableErrors
   draft?: boolean
   fallbackLocale?: TypedLocale
   id: number | string
@@ -23,17 +34,22 @@ export type Options<TSlug extends CollectionSlug = CollectionSlug> = {
   locale?: 'all' | TypedLocale
   overrideAccess?: boolean
   req?: PayloadRequest
+  select?: TSelect
   showHiddenFields?: boolean
   user?: Document
 }
 
-export default async function findByIDLocal<TOptions extends Options>(
+export default async function findByIDLocal<
+  TSlug extends CollectionSlug,
+  TDisableErrors extends boolean,
+  TSelect extends SelectFromCollectionSlug<TSlug>,
+>(
   payload: Payload,
-  options: TOptions,
+  options: Options<TSlug, TDisableErrors, TSelect>,
 ): Promise<
-  TOptions['disableErrors'] extends true
-    ? DataFromCollectionSlug<TOptions['collection']> | null
-    : DataFromCollectionSlug<TOptions['collection']>
+  TDisableErrors extends true
+    ? null | TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
+    : TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
 > {
   const {
     id,

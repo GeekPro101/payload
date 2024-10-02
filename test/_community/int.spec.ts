@@ -56,7 +56,14 @@ describe('_Community Tests', () => {
       },
     })
 
-    // payload.find({ collection: 'posts', select: {} })
+    const post = await payload.findByID({
+      collection: 'posts',
+      id: newPost.id,
+      disableErrors: false,
+      select: { serverTextField: true },
+    })
+
+    expect(post).toBeTruthy()
 
     expect(newPost.text).toEqual('LOCAL API EXAMPLE')
   })

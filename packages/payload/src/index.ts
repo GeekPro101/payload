@@ -22,6 +22,7 @@ import type {
   BulkOperationResult,
   Collection,
   DataFromCollectionSlug,
+  SelectFromCollectionSlug,
   TypeWithID,
 } from './collections/config/types.js'
 export type * from './admin/types.js'
@@ -72,6 +73,20 @@ import { traverseFields } from './utilities/traverseFields.js'
 export type SelectType = {
   [k: string]: boolean | SelectType
 }
+
+export type TransformDataWithSelect<
+  Data extends Record<string, any>,
+  Select = undefined,
+> = Select extends SelectType
+  ? {
+      [K in keyof Data as K extends keyof Select
+        ? Select[K] extends true
+          ? K
+          : never
+        : never]: Data[K]
+    }
+  : Data
+
 export interface GeneratedTypes {
   authUntyped: {
     [slug: string]: {
@@ -260,15 +275,19 @@ export class BasePayload {
    * @param options
    * @returns document with specified ID
    */
-  findByID = async <TOptions extends FindByIDOptions>(
-    options: TOptions,
+  findByID = async <
+    TSlug extends CollectionSlug,
+    TDisableErrors extends boolean,
+    TSelect extends SelectFromCollectionSlug<TSlug>,
+  >(
+    options: FindByIDOptions<TSlug, TDisableErrors, TSelect>,
   ): Promise<
-    TOptions['disableErrors'] extends true
-      ? DataFromCollectionSlug<TOptions['collection']> | null
-      : DataFromCollectionSlug<TOptions['collection']>
+    TDisableErrors extends true
+      ? null | TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
+      : TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
   > => {
     const { findByID } = localOperations
-    return findByID<TOptions>(this, options)
+    return findByID<TSlug, TDisableErrors, TSelect>(this, options)
   }
 
   findGlobal = async <TSlug extends GlobalSlug>(
