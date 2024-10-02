@@ -60,7 +60,9 @@ describe('_Community Tests', () => {
       collection: 'posts',
       id: newPost.id,
       disableErrors: false,
-      select: { serverTextField: true },
+      select: {
+        serverTextField: true,
+      },
     })
 
     expect(post).toBeTruthy()

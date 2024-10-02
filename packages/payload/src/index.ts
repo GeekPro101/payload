@@ -83,7 +83,9 @@ export type TransformDataWithSelect<
         ? Select[K] extends true
           ? K
           : never
-        : never]: Data[K]
+        : K extends 'id'
+          ? K
+          : never]: Data[K]
     }
   : Data
 
