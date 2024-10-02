@@ -56,6 +56,8 @@ describe('_Community Tests', () => {
       },
     })
 
+    // payload.find({ collection: 'posts', select: {} })
+
     expect(newPost.text).toEqual('LOCAL API EXAMPLE')
   })
 

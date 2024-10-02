@@ -1,7 +1,7 @@
 import type { PaginatedDocs } from '../../../database/types.js'
 import type { CollectionSlug, JoinQuery, Payload, TypedLocale } from '../../../index.js'
 import type { Document, PayloadRequest, RequestContext, Where } from '../../../types/index.js'
-import type { DataFromCollectionSlug } from '../../config/types.js'
+import type { DataFromCollectionSlug, SelectFromCollectionSlug } from '../../config/types.js'
 
 import { APIError } from '../../../errors/index.js'
 import { createLocalReq } from '../../../utilities/createLocalReq.js'
@@ -26,6 +26,7 @@ export type Options<TSlug extends CollectionSlug> = {
   page?: number
   pagination?: boolean
   req?: PayloadRequest
+  select?: SelectFromCollectionSlug<TSlug>
   showHiddenFields?: boolean
   sort?: string
   user?: Document
@@ -48,6 +49,7 @@ export async function findLocal<TSlug extends CollectionSlug>(
     overrideAccess = true,
     page,
     pagination = true,
+    // select,
     showHiddenFields,
     sort,
     where,

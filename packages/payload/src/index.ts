@@ -69,6 +69,9 @@ import { getLogger } from './utilities/logger.js'
 import { serverInit as serverInitTelemetry } from './utilities/telemetry/events/serverInit.js'
 import { traverseFields } from './utilities/traverseFields.js'
 
+export type SelectType = {
+  [k: string]: boolean | SelectType
+}
 export interface GeneratedTypes {
   authUntyped: {
     [slug: string]: {
@@ -88,14 +91,24 @@ export interface GeneratedTypes {
       }
     }
   }
+  collectionsSelectUntyped: {
+    [slug: string]: SelectType
+  }
+
   collectionsUntyped: {
     [slug: string]: JsonObject & TypeWithID
   }
   dbUntyped: {
     defaultIDType: number | string
   }
+  globalsSelectUntyped: {
+    [slug: string]: SelectType
+  }
+
   globalsUntyped: {
-    [slug: string]: JsonObject
+    [slug: string]: {
+      [k: string]: boolean
+    }
   }
   localeUntyped: null | string
   userUntyped: User
@@ -106,12 +119,28 @@ type ResolveCollectionType<T> = 'collections' extends keyof T
   ? T['collections']
   : // @ts-expect-error
     T['collectionsUntyped']
-// @ts-expect-error
-type ResolveGlobalType<T> = 'globals' extends keyof T ? T['globals'] : T['globalsUntyped']
+
+type ResolveCollectionSelectType<T> = 'collectionsSelect' extends keyof T
+  ? T['collectionsSelect']
+  : // @ts-expect-error
+    T['collectionsSelectUntyped']
+type ResolveGlobalType<T> = 'globals' extends keyof T
+  ? T['globals']
+  : // @ts-expect-error
+    T['globalsUntyped']
+
+type ResolveGlobalSelectType<T> = 'globalsSelect' extends keyof T
+  ? T['globalsSelect']
+  : // @ts-expect-error
+    T['globalsSelectUntyped']
 
 // Applying helper types to GeneratedTypes
 export type TypedCollection = ResolveCollectionType<GeneratedTypes>
+
+export type TypedCollectionSelect = ResolveCollectionSelectType<GeneratedTypes>
 export type TypedGlobal = ResolveGlobalType<GeneratedTypes>
+
+export type TypedGlobalSelect = ResolveGlobalSelectType<GeneratedTypes>
 
 // Extract string keys from the type
 type StringKeyOf<T> = Extract<keyof T, string>
