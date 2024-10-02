@@ -716,15 +716,13 @@ export function fieldsToSelectJSONSchema({ fields }: { fields: Field[] }): JSONS
                 fieldsToSelectJSONSchema({ fields: tab.fields }),
               ],
             }
-            break
+            continue
           }
 
           schema.properties = {
             ...schema.properties,
             ...fieldsToSelectJSONSchema({ fields: tab.fields }).properties,
           }
-
-          break
         }
         break
 
