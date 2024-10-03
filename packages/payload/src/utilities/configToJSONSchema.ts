@@ -656,11 +656,7 @@ export function fieldsToSelectJSONSchema({ fields }: { fields: Field[] }): JSONS
   const schema: JSONSchema4 = {
     type: 'object',
     additionalProperties: false,
-    properties: {
-      id: {
-        type: 'boolean',
-      },
-    },
+    properties: {},
   }
 
   for (const field of fields) {
@@ -693,8 +689,8 @@ export function fieldsToSelectJSONSchema({ fields }: { fields: Field[] }): JSONS
 
         break
 
-      case 'group':
       case 'array':
+      case 'group':
         schema.properties[field.name] = {
           oneOf: [
             {

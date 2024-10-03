@@ -49,25 +49,17 @@ describe('_Community Tests', () => {
   // --__--__--__--__--__--__--__--__--__
 
   it('local API example', async () => {
-    const newPost = await payload.create({
-      collection: postsSlug,
-      data: {
-        text: 'LOCAL API EXAMPLE',
-      },
-    })
-
-    const post = await payload.findByID({
-      collection: 'posts',
-      id: newPost.id,
-      disableErrors: false,
+    const simple = await payload.findByID({
+      collection: 'simple',
+      id: 'test',
       select: {
-        serverTextField: true,
+        someNumber: false,
       },
     })
 
-    expect(post).toBeTruthy()
+    // simple.array[0].simple.post.post.post.expect(newPost.text).toEqual('LOCAL API EXAMPLE')
 
-    expect(newPost.text).toEqual('LOCAL API EXAMPLE')
+    expect(simple).toBeTruthy()
   })
 
   it('rest API example', async () => {

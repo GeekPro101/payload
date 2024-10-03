@@ -112,6 +112,17 @@ export interface Post {
 export interface Simple {
   id: string;
   text?: string | null;
+  someNumber?: number | null;
+  group?: {
+    text?: string | null;
+  };
+  array?:
+    | {
+        text?: string | null;
+        textAdditional?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -246,7 +257,6 @@ export interface PayloadMigration {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect {
-  id?: boolean;
   text?: boolean;
   serverTextField?: boolean;
   richText?: boolean;
@@ -256,15 +266,15 @@ export interface PostsSelect {
         test?:
           | boolean
           | {
-              id?: boolean;
               test?: boolean;
+              id?: boolean;
               blockName?: boolean;
             };
         someBlock2?:
           | boolean
           | {
-              id?: boolean;
               test2?: boolean;
+              id?: boolean;
               blockName?: boolean;
             };
       };
@@ -277,8 +287,20 @@ export interface PostsSelect {
  * via the `definition` "simple_select".
  */
 export interface SimpleSelect {
-  id?: boolean;
   text?: boolean;
+  someNumber?: boolean;
+  group?:
+    | boolean
+    | {
+        text?: boolean;
+      };
+  array?:
+    | boolean
+    | {
+        text?: boolean;
+        textAdditional?: boolean;
+        id?: boolean;
+      };
   updatedAt?: boolean;
   createdAt?: boolean;
 }
@@ -287,7 +309,6 @@ export interface SimpleSelect {
  * via the `definition` "media_select".
  */
 export interface MediaSelect {
-  id?: boolean;
   updatedAt?: boolean;
   createdAt?: boolean;
   url?: boolean;
@@ -302,11 +323,9 @@ export interface MediaSelect {
   sizes?:
     | boolean
     | {
-        id?: boolean;
         thumbnail?:
           | boolean
           | {
-              id?: boolean;
               url?: boolean;
               width?: boolean;
               height?: boolean;
@@ -317,7 +336,6 @@ export interface MediaSelect {
         medium?:
           | boolean
           | {
-              id?: boolean;
               url?: boolean;
               width?: boolean;
               height?: boolean;
@@ -328,7 +346,6 @@ export interface MediaSelect {
         large?:
           | boolean
           | {
-              id?: boolean;
               url?: boolean;
               width?: boolean;
               height?: boolean;
@@ -343,7 +360,6 @@ export interface MediaSelect {
  * via the `definition` "users_select".
  */
 export interface UsersSelect {
-  id?: boolean;
   updatedAt?: boolean;
   createdAt?: boolean;
   email?: boolean;
@@ -359,7 +375,6 @@ export interface UsersSelect {
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect {
-  id?: boolean;
   document?: boolean;
   globalSlug?: boolean;
   user?: boolean;
@@ -371,7 +386,6 @@ export interface PayloadLockedDocumentsSelect {
  * via the `definition` "payload-preferences_select".
  */
 export interface PayloadPreferencesSelect {
-  id?: boolean;
   user?: boolean;
   key?: boolean;
   value?: boolean;
@@ -383,7 +397,6 @@ export interface PayloadPreferencesSelect {
  * via the `definition` "payload-migrations_select".
  */
 export interface PayloadMigrationsSelect {
-  id?: boolean;
   name?: boolean;
   batch?: boolean;
   updatedAt?: boolean;
@@ -427,7 +440,6 @@ export interface ObjectWithNumber {
  * via the `definition` "menu_select".
  */
 export interface MenuSelect {
-  id?: boolean;
   globalText?: boolean;
   updatedAt?: boolean;
   createdAt?: boolean;
@@ -437,7 +449,6 @@ export interface MenuSelect {
  * via the `definition` "custom-ts_select".
  */
 export interface CustomTsSelect {
-  id?: boolean;
   custom?: boolean;
   withDefinitionsUsage?: boolean;
   json?: boolean;
