@@ -53,7 +53,8 @@ describe('_Community Tests', () => {
       collection: 'simple',
       id: 'test',
       select: {
-        someNumber: false,
+        createdAt: true,
+        text: true,
       },
     })
 

@@ -1,5 +1,6 @@
 import type { I18n, TFunction } from '@payloadcms/translations'
 import type DataLoader from 'dataloader'
+import type { Paths } from 'ts-essentials'
 import type { URL } from 'url'
 
 import type { TypeWithID, TypeWithTimestamps } from '../collections/config/types.js'
@@ -138,3 +139,81 @@ export function docHasTimestamps(doc: any): doc is TypeWithTimestamps {
 export type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N // This is a commonly used trick to detect 'any'
 export type IsAny<T> = IfAny<T, true, false>
 export type ReplaceAny<T, DefaultType> = IsAny<T> extends true ? DefaultType : T
+
+type PathImpl<T, Key extends keyof T> = Key extends string
+  ? IsAny<T[Key]> extends true
+    ? never
+    : T[Key] extends Record<string, any>
+      ?
+          | `${Key}.${Exclude<keyof T[Key], keyof any[]> & string}`
+          | `${Key}.${PathImpl<T[Key], Exclude<keyof T[Key], keyof any[]>> & string}`
+      : never
+  : never
+
+type PathImpl2<T> = keyof T | PathImpl<T, keyof T>
+
+type Path<T> = keyof T extends string
+  ? PathImpl2<T> extends infer P
+    ? P extends keyof T | string
+      ? P
+      : keyof T
+    : keyof T
+  : never
+
+type PathValue<T, P extends Path<T>> = P extends `${infer Key}.${infer Rest}`
+  ? Key extends keyof T
+    ? Rest extends Path<T[Key]>
+      ? PathValue<T[Key], Rest>
+      : never
+    : never
+  : P extends keyof T
+    ? T[P]
+    : never
+
+export type ToPathsObject<
+  Data extends Record<string, any>,
+  DataPaths = Paths<Data>,
+  DataPathsWithValue = {
+    // @ts-expect-error-error
+    [K in DataPaths]: PathValue<Data, K>
+  },
+> = {
+  [K in keyof DataPathsWithValue as DataPathsWithValue[K] extends object
+    ? never
+    : K]: DataPathsWithValue[K]
+}
+
+export type GetSelectMode<Select extends SelectType> =
+  ToPathsObject<Select> extends Record<string, infer V>
+    ? V extends false
+      ? 'exclude'
+      : 'include'
+    : 'include'
+
+export type SelectType = {
+  [k: string]: boolean | SelectType
+}
+
+export type TransformDataWithSelect<
+  Data extends Record<string, any>,
+  Select = undefined,
+  SelectMode = Select extends SelectType ? GetSelectMode<Select> : never,
+> = SelectMode extends never
+  ? Data
+  : SelectMode extends 'include'
+    ? {
+        [K in keyof Data as K extends keyof Select
+          ? Select[K] extends object | true
+            ? K
+            : never
+          : K extends 'id'
+            ? K
+            : never]: Data[K]
+      }
+    : {
+        [K in keyof Data as K extends keyof Select
+          ? Select[K] extends object | undefined
+            ? K
+            : never
+          : K]: Data[K]
+      }

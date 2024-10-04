@@ -34,7 +34,6 @@ import type {
   Options as DeleteOptions,
 } from './collections/operations/local/delete.js'
 export type { MappedView } from './admin/views/types.js'
-import type { Paths } from 'ts-essentials'
 
 import type { Options as DuplicateOptions } from './collections/operations/local/duplicate.js'
 import type { Options as FindOptions } from './collections/operations/local/find.js'
@@ -56,7 +55,7 @@ import type { Options as FindGlobalVersionByIDOptions } from './globals/operatio
 import type { Options as FindGlobalVersionsOptions } from './globals/operations/local/findVersions.js'
 import type { Options as RestoreGlobalVersionOptions } from './globals/operations/local/restoreVersion.js'
 import type { Options as UpdateGlobalOptions } from './globals/operations/local/update.js'
-import type { JsonObject } from './types/index.js'
+import type { JsonObject, SelectType, TransformDataWithSelect } from './types/index.js'
 import type { TraverseFieldsCallback } from './utilities/traverseFields.js'
 import type { TypeWithVersion } from './versions/types.js'
 
@@ -71,86 +70,6 @@ import localGlobalOperations from './globals/operations/local/index.js'
 import { getLogger } from './utilities/logger.js'
 import { serverInit as serverInitTelemetry } from './utilities/telemetry/events/serverInit.js'
 import { traverseFields } from './utilities/traverseFields.js'
-
-type IsAny<T> = unknown extends T ? ([keyof T] extends [never] ? false : true) : false
-
-export type PathImpl<T, Key extends keyof T> = Key extends string
-  ? IsAny<T[Key]> extends true
-    ? never
-    : T[Key] extends Record<string, any>
-      ?
-          | `${Key}.${Exclude<keyof T[Key], keyof any[]> & string}`
-          | `${Key}.${PathImpl<T[Key], Exclude<keyof T[Key], keyof any[]>> & string}`
-      : never
-  : never
-
-export type PathImpl2<T> = keyof T | PathImpl<T, keyof T>
-
-export type Path<T> = keyof T extends string
-  ? PathImpl2<T> extends infer P
-    ? P extends keyof T | string
-      ? P
-      : keyof T
-    : keyof T
-  : never
-
-export type PathValue<T, P extends Path<T>> = P extends `${infer Key}.${infer Rest}`
-  ? Key extends keyof T
-    ? Rest extends Path<T[Key]>
-      ? PathValue<T[Key], Rest>
-      : never
-    : never
-  : P extends keyof T
-    ? T[P]
-    : never
-
-type ToPathsObject<
-  Data extends Record<string, any>,
-  DataPaths = Paths<Data>,
-  DataPathsWithValue = {
-    // @ts-expect-error-error
-    [K in DataPaths]: PathValue<Data, K>
-  },
-> = {
-  [K in keyof DataPathsWithValue as DataPathsWithValue[K] extends object
-    ? never
-    : K]: DataPathsWithValue[K]
-}
-
-export type GetSelectMode<Select extends SelectType> =
-  ToPathsObject<Select> extends Record<string, infer V>
-    ? V extends false
-      ? 'exclude'
-      : 'include'
-    : 'include'
-
-export type SelectType = {
-  [k: string]: boolean | SelectType
-}
-
-export type TransformDataWithSelect<
-  Data extends Record<string, any>,
-  Select = undefined,
-  SelectMode = Select extends SelectType ? GetSelectMode<Select> : never,
-> = SelectMode extends never
-  ? Data
-  : SelectMode extends 'include'
-    ? {
-        [K in keyof Data as K extends keyof Select
-          ? Select[K] extends object | true
-            ? K
-            : never
-          : K extends 'id'
-            ? K
-            : never]: Data[K]
-      }
-    : {
-        [K in keyof Data as K extends keyof Select
-          ? Select[K] extends object | undefined
-            ? K
-            : never
-          : K]: Data[K]
-      }
 
 export interface GeneratedTypes {
   authUntyped: {
