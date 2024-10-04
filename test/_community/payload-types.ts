@@ -20,13 +20,13 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   collectionsSelect?: {
-    posts: PostsSelect;
-    simple: SimpleSelect;
-    media: MediaSelect;
-    users: UsersSelect;
-    'payload-locked-documents': PayloadLockedDocumentsSelect;
-    'payload-preferences': PayloadPreferencesSelect;
-    'payload-migrations': PayloadMigrationsSelect;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    simple: SimpleSelect<false> | SimpleSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: string;
@@ -36,8 +36,8 @@ export interface Config {
     'custom-ts': CustomT;
   };
   globalsSelect?: {
-    menu: MenuSelect;
-    'custom-ts': CustomTsSelect;
+    menu: MenuSelect<false> | MenuSelect<true>;
+    'custom-ts': CustomTsSelect<false> | CustomTsSelect<true>;
   };
   locale: null;
   user: User & {
@@ -256,102 +256,102 @@ export interface PayloadMigration {
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
-export interface PostsSelect {
-  text?: boolean;
-  serverTextField?: boolean;
-  richText?: boolean;
+export interface PostsSelect<T> {
+  text?: T;
+  serverTextField?: T;
+  richText?: T;
   myBlocks?:
-    | boolean
+    | T
     | {
         test?:
-          | boolean
+          | T
           | {
-              test?: boolean;
-              id?: boolean;
-              blockName?: boolean;
+              test?: T;
+              id?: T;
+              blockName?: T;
             };
         someBlock2?:
-          | boolean
+          | T
           | {
-              test2?: boolean;
-              id?: boolean;
-              blockName?: boolean;
+              test2?: T;
+              id?: T;
+              blockName?: T;
             };
       };
-  updatedAt?: boolean;
-  createdAt?: boolean;
-  _status?: boolean;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "simple_select".
  */
-export interface SimpleSelect {
-  text?: boolean;
-  someNumber?: boolean;
+export interface SimpleSelect<T> {
+  text?: T;
+  someNumber?: T;
   group?:
-    | boolean
+    | T
     | {
-        text?: boolean;
+        text?: T;
       };
   array?:
-    | boolean
+    | T
     | {
-        text?: boolean;
-        textAdditional?: boolean;
-        id?: boolean;
+        text?: T;
+        textAdditional?: T;
+        id?: T;
       };
-  updatedAt?: boolean;
-  createdAt?: boolean;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
-export interface MediaSelect {
-  updatedAt?: boolean;
-  createdAt?: boolean;
-  url?: boolean;
-  thumbnailURL?: boolean;
-  filename?: boolean;
-  mimeType?: boolean;
-  filesize?: boolean;
-  width?: boolean;
-  height?: boolean;
-  focalX?: boolean;
-  focalY?: boolean;
+export interface MediaSelect<T> {
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
   sizes?:
-    | boolean
+    | T
     | {
         thumbnail?:
-          | boolean
+          | T
           | {
-              url?: boolean;
-              width?: boolean;
-              height?: boolean;
-              mimeType?: boolean;
-              filesize?: boolean;
-              filename?: boolean;
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
             };
         medium?:
-          | boolean
+          | T
           | {
-              url?: boolean;
-              width?: boolean;
-              height?: boolean;
-              mimeType?: boolean;
-              filesize?: boolean;
-              filename?: boolean;
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
             };
         large?:
-          | boolean
+          | T
           | {
-              url?: boolean;
-              width?: boolean;
-              height?: boolean;
-              mimeType?: boolean;
-              filesize?: boolean;
-              filename?: boolean;
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
             };
       };
 }
@@ -359,48 +359,48 @@ export interface MediaSelect {
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
-export interface UsersSelect {
-  updatedAt?: boolean;
-  createdAt?: boolean;
-  email?: boolean;
-  resetPasswordToken?: boolean;
-  resetPasswordExpiration?: boolean;
-  salt?: boolean;
-  hash?: boolean;
-  loginAttempts?: boolean;
-  lockUntil?: boolean;
+export interface UsersSelect<T> {
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
-export interface PayloadLockedDocumentsSelect {
-  document?: boolean;
-  globalSlug?: boolean;
-  user?: boolean;
-  updatedAt?: boolean;
-  createdAt?: boolean;
+export interface PayloadLockedDocumentsSelect<T> {
+  document?: T;
+  globalSlug?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences_select".
  */
-export interface PayloadPreferencesSelect {
-  user?: boolean;
-  key?: boolean;
-  value?: boolean;
-  updatedAt?: boolean;
-  createdAt?: boolean;
+export interface PayloadPreferencesSelect<T> {
+  user?: T;
+  key?: T;
+  value?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations_select".
  */
-export interface PayloadMigrationsSelect {
-  name?: boolean;
-  batch?: boolean;
-  updatedAt?: boolean;
-  createdAt?: boolean;
+export interface PayloadMigrationsSelect<T> {
+  name?: T;
+  batch?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -439,21 +439,21 @@ export interface ObjectWithNumber {
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "menu_select".
  */
-export interface MenuSelect {
-  globalText?: boolean;
-  updatedAt?: boolean;
-  createdAt?: boolean;
+export interface MenuSelect<T> {
+  globalText?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "custom-ts_select".
  */
-export interface CustomTsSelect {
-  custom?: boolean;
-  withDefinitionsUsage?: boolean;
-  json?: boolean;
-  updatedAt?: boolean;
-  createdAt?: boolean;
+export interface CustomTsSelect<T> {
+  custom?: T;
+  withDefinitionsUsage?: T;
+  json?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
