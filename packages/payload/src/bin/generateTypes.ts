@@ -66,7 +66,7 @@ export async function generateTypes(
     if (isSelectTypeToken) {
       if (line.startsWith('export interface')) {
         // add generic to the interface
-        newLine = line.replace(/(export interface\s+\w+)(\s*\{)/g, '$1<T>$2')
+        newLine = line.replace(/(export interface\s+\w+)(\s*\{)/g, '$1<T extends boolean = true>$2')
       } else {
         // replace booleans with T on the line
         newLine = line.replace(/(?<!\?)\bboolean\b/g, 'T')
