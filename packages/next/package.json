@@ -1,6 +1,6 @@
 {
   "name": "@payloadcms/next",
-  "version": "3.0.0-beta.110",
+  "version": "3.0.0-beta.111",
   "homepage": "https://payloadcms.com",
   "repository": {
     "type": "git",
@@ -126,7 +126,7 @@
       },
       "./withPayload": {
         "import": "./dist/withPayload.js",
-        "require": "./dist/cjs/withPayload.cjs",
+        "require": "./dist/cjs/withPayload.js",
         "default": "./dist/withPayload.js"
       },
       "./layouts": {
