@@ -1,11 +1,14 @@
 import type { I18n, TFunction } from '@payloadcms/translations'
 import type DataLoader from 'dataloader'
-import type { Paths } from 'ts-essentials'
 import type { URL } from 'url'
 
-import type { TypeWithID, TypeWithTimestamps } from '../collections/config/types.js'
+import type {
+  DataFromCollectionSlug,
+  TypeWithID,
+  TypeWithTimestamps,
+} from '../collections/config/types.js'
 import type payload from '../index.js'
-import type { TypedLocale, TypedUser } from '../index.js'
+import type { CollectionSlug, TypedLocale, TypedUser } from '../index.js'
 import type { validOperators } from './constants.js'
 export type { Payload as Payload } from '../index.js'
 
@@ -140,80 +143,47 @@ export type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N // This is a commonly used 
 export type IsAny<T> = IfAny<T, true, false>
 export type ReplaceAny<T, DefaultType> = IsAny<T> extends true ? DefaultType : T
 
-type PathImpl<T, Key extends keyof T> = Key extends string
-  ? IsAny<T[Key]> extends true
-    ? never
-    : T[Key] extends Record<string, any>
-      ?
-          | `${Key}.${Exclude<keyof T[Key], keyof any[]> & string}`
-          | `${Key}.${PathImpl<T[Key], Exclude<keyof T[Key], keyof any[]>> & string}`
-      : never
-  : never
-
-type PathImpl2<T> = keyof T | PathImpl<T, keyof T>
-
-type Path<T> = keyof T extends string
-  ? PathImpl2<T> extends infer P
-    ? P extends keyof T | string
-      ? P
-      : keyof T
-    : keyof T
-  : never
-
-type PathValue<T, P extends Path<T>> = P extends `${infer Key}.${infer Rest}`
-  ? Key extends keyof T
-    ? Rest extends Path<T[Key]>
-      ? PathValue<T[Key], Rest>
-      : never
-    : never
-  : P extends keyof T
-    ? T[P]
-    : never
-
-export type ToPathsObject<
-  Data extends Record<string, any>,
-  DataPaths = Paths<Data>,
-  DataPathsWithValue = {
-    // @ts-expect-error-error
-    [K in DataPaths]: PathValue<Data, K>
-  },
-> = {
-  [K in keyof DataPathsWithValue as DataPathsWithValue[K] extends object
-    ? never
-    : K]: DataPathsWithValue[K]
+export type SelectIncludeType = {
+  [k: string]: SelectIncludeType | true
 }
 
-export type GetSelectMode<Select extends SelectType> =
-  ToPathsObject<Select> extends Record<string, infer V>
-    ? V extends false
-      ? 'exclude'
-      : 'include'
-    : 'include'
-
-export type SelectType = {
-  [k: string]: boolean | SelectType
+export type SelectExcludeType = {
+  [k: string]: false | SelectIncludeType
 }
+
+export type SelectType = SelectExcludeType | SelectIncludeType
+
+export type ApplyDisableErrors<T, DisableErrors extends boolean> = DisableErrors extends true
+  ? null | T
+  : T
 
 export type TransformDataWithSelect<
   Data extends Record<string, any>,
-  Select = undefined,
-  SelectMode = Select extends SelectType ? GetSelectMode<Select> : never,
-> = SelectMode extends never
+  Select extends SelectType,
+> = Select extends never
   ? Data
-  : SelectMode extends 'include'
-    ? {
-        [K in keyof Data as K extends keyof Select
-          ? Select[K] extends object | true
-            ? K
-            : never
-          : K extends 'id'
-            ? K
-            : never]: Data[K]
-      }
-    : {
-        [K in keyof Data as K extends keyof Select
-          ? Select[K] extends object | undefined
-            ? K
-            : never
-          : K]: Data[K]
-      }
+  : string extends keyof Select
+    ? Data
+    : Select extends SelectIncludeType
+      ? {
+          [K in keyof Data as K extends keyof Select
+            ? Select[K] extends object | true
+              ? K
+              : never
+            : // select 'id' always
+              K extends 'id'
+              ? K
+              : never]: Data[K]
+        }
+      : {
+          [K in keyof Data as K extends keyof Select
+            ? Select[K] extends object | undefined
+              ? K
+              : never
+            : K]: Data[K]
+        }
+
+export type TransformCollectionWithSelect<
+  TSlug extends CollectionSlug,
+  TSelect extends SelectType,
+> = TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>

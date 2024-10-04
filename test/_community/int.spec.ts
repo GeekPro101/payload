@@ -50,8 +50,14 @@ describe('_Community Tests', () => {
 
   it('local API example', async () => {
     // simple.array[0].simple.post.post.post.expect(newPost.text).toEqual('LOCAL API EXAMPLE')
+    const simple = await payload.find({
+      collection: 'simple',
+      select: {
+        array: true,
+      },
+    })
 
-    expect(1).toBeTruthy()
+    expect(simple).toBeTruthy()
   })
 
   it('rest API example', async () => {

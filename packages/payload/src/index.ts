@@ -55,7 +55,12 @@ import type { Options as FindGlobalVersionByIDOptions } from './globals/operatio
 import type { Options as FindGlobalVersionsOptions } from './globals/operations/local/findVersions.js'
 import type { Options as RestoreGlobalVersionOptions } from './globals/operations/local/restoreVersion.js'
 import type { Options as UpdateGlobalOptions } from './globals/operations/local/update.js'
-import type { JsonObject, SelectType, TransformDataWithSelect } from './types/index.js'
+import type {
+  ApplyDisableErrors,
+  JsonObject,
+  SelectType,
+  TransformCollectionWithSelect,
+} from './types/index.js'
 import type { TraverseFieldsCallback } from './utilities/traverseFields.js'
 import type { TypeWithVersion } from './versions/types.js'
 
@@ -105,9 +110,7 @@ export interface GeneratedTypes {
   }
 
   globalsUntyped: {
-    [slug: string]: {
-      [k: string]: boolean
-    }
+    [slug: string]: JsonObject
   }
   localeUntyped: null | string
   userUntyped: User
@@ -247,11 +250,11 @@ export class BasePayload {
    * @param options
    * @returns documents satisfying query
    */
-  find = async <TSlug extends CollectionSlug>(
-    options: FindOptions<TSlug>,
-  ): Promise<PaginatedDocs<DataFromCollectionSlug<TSlug>>> => {
+  find = async <TSlug extends CollectionSlug, TSelect extends SelectFromCollectionSlug<TSlug>>(
+    options: FindOptions<TSlug, TSelect>,
+  ): Promise<PaginatedDocs<TransformCollectionWithSelect<TSlug, TSelect>>> => {
     const { find } = localOperations
-    return find<TSlug>(this, options)
+    return find<TSlug, TSelect>(this, options)
   }
 
   /**
@@ -265,11 +268,7 @@ export class BasePayload {
     TSelect extends SelectFromCollectionSlug<TSlug>,
   >(
     options: FindByIDOptions<TSlug, TDisableErrors, TSelect>,
-  ): Promise<
-    TDisableErrors extends true
-      ? null | TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
-      : TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
-  > => {
+  ): Promise<ApplyDisableErrors<TransformCollectionWithSelect<TSlug, TSelect>, TDisableErrors>> => {
     const { findByID } = localOperations
     return findByID<TSlug, TDisableErrors, TSelect>(this, options)
   }

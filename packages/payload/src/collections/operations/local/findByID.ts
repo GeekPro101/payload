@@ -1,13 +1,13 @@
+/* eslint-disable no-restricted-exports */
+import type { CollectionSlug, JoinQuery, Payload, SelectType, TypedLocale } from '../../../index.js'
 import type {
-  CollectionSlug,
-  JoinQuery,
-  Payload,
-  SelectType,
-  TransformDataWithSelect,
-  TypedLocale,
-} from '../../../index.js'
-import type { Document, PayloadRequest, RequestContext } from '../../../types/index.js'
-import type { DataFromCollectionSlug, SelectFromCollectionSlug } from '../../config/types.js'
+  ApplyDisableErrors,
+  Document,
+  PayloadRequest,
+  RequestContext,
+  TransformCollectionWithSelect,
+} from '../../../types/index.js'
+import type { SelectFromCollectionSlug } from '../../config/types.js'
 
 import { APIError } from '../../../errors/index.js'
 import { createLocalReq } from '../../../utilities/createLocalReq.js'
@@ -46,11 +46,7 @@ export default async function findByIDLocal<
 >(
   payload: Payload,
   options: Options<TSlug, TDisableErrors, TSelect>,
-): Promise<
-  TDisableErrors extends true
-    ? null | TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
-    : TransformDataWithSelect<DataFromCollectionSlug<TSlug>, TSelect>
-> {
+): Promise<ApplyDisableErrors<TransformCollectionWithSelect<TSlug, TSelect>, TDisableErrors>> {
   const {
     id,
     collection: collectionSlug,
@@ -72,7 +68,7 @@ export default async function findByIDLocal<
     )
   }
 
-  return findByIDOperation<TOptions['collection']>({
+  return findByIDOperation<TSlug, TDisableErrors, TSelect>({
     id,
     collection,
     currentDepth,
