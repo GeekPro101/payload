@@ -148,7 +148,7 @@ export type SelectIncludeType = {
 }
 
 export type SelectExcludeType = {
-  [k: string]: false | SelectIncludeType
+  [k: string]: false | SelectExcludeType
 }
 
 export type SelectType = SelectExcludeType | SelectIncludeType
@@ -164,24 +164,38 @@ export type TransformDataWithSelect<
   ? Data
   : string extends keyof Select
     ? Data
-    : Select extends SelectIncludeType
-      ? {
-          [K in keyof Data as K extends keyof Select
-            ? Select[K] extends object | true
-              ? K
-              : never
-            : // select 'id' always
-              K extends 'id'
-              ? K
-              : never]: Data[K]
-        }
-      : {
-          [K in keyof Data as K extends keyof Select
-            ? Select[K] extends object | undefined
-              ? K
-              : never
-            : K]: Data[K]
-        }
+    : // START Handle types when they aren't generated
+      // For example in any package in this repository outside of tests / plugins
+      // This stil gives us autocomplete when using include select mode, i.e select: {title :true} returns type {title: any, id: string | number}
+      JsonObject extends Omit<Data, 'id'>
+      ? Select extends SelectIncludeType
+        ? {
+            [K in Data extends TypeWithID ? 'id' | keyof Select : keyof Select]: K extends 'id'
+              ? number | string
+              : any
+          }
+        : Data
+      : // END Handle types when they aren't generated
+        // Handle include mode
+        Select extends SelectIncludeType
+        ? {
+            [K in keyof Data as K extends keyof Select
+              ? Select[K] extends object | true
+                ? K
+                : never
+              : // select 'id' always
+                K extends 'id'
+                ? K
+                : never]: Data[K]
+          }
+        : // Handle exclude mode
+          {
+            [K in keyof Data as K extends keyof Select
+              ? Select[K] extends object | undefined
+                ? K
+                : never
+              : K]: Data[K]
+          }
 
 export type TransformCollectionWithSelect<
   TSlug extends CollectionSlug,

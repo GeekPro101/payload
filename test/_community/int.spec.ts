@@ -53,7 +53,7 @@ describe('_Community Tests', () => {
     const simple = await payload.find({
       collection: 'simple',
       select: {
-        array: true,
+        array: false,
       },
     })
 
